@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Installation de Java 17 (requis par Gradle/Android)
+      - name: Installation de Java 21 (requis par Gradle/Android)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
