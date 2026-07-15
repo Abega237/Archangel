@@ -17,7 +17,7 @@ jobs:
       - name: Installation de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Installation de Java 17 (requis par Gradle/Android)
         uses: actions/setup-java@v4
