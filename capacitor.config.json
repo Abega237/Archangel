@@ -2,11 +2,6 @@
   "appId": "com.archangel.app",
   "appName": "Archangel",
   "webDir": "public",
-  "server": {
-    "url": "http://10.237.15.183:3000",
-    "cleartext": true,
-    "androidScheme": "http"
-  },
   "android": {
     "buildOptions": {
       "keystorePath": "archangel.keystore",
