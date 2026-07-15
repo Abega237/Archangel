@@ -1,0 +1,37 @@
+{
+  "appId": "com.archangel.app",
+  "appName": "Archangel",
+  "webDir": "public",
+  "server": {
+    "url": "http://10.237.15.183:3000",
+    "cleartext": true,
+    "androidScheme": "http"
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "archangel.keystore",
+      "keystoreAlias": "archangel"
+    },
+    "backgroundColor": "#0d0f17",
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "backgroundColor": "#0d0f17",
+    "contentInset": "automatic"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#0d0f17",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

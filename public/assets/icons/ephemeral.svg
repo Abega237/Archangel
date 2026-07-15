@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <radialGradient id="clockFace" cx="45%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#ffe090"/>
+      <stop offset="40%" stop-color="#f0a820"/>
+      <stop offset="100%" stop-color="#b06000"/>
+    </radialGradient>
+    <radialGradient id="clockGlass" cx="35%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#ffe090" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#f0a820" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="clockRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd060"/>
+      <stop offset="50%" stop-color="#b06010"/>
+      <stop offset="100%" stop-color="#7a3800"/>
+    </linearGradient>
+    <filter id="clockShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#8a4800" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Ombre extrusion -->
+  <circle cx="25" cy="27" r="19" fill="#7a3800" opacity="0.35"/>
+  <!-- Cadre/cercle extérieur -->
+  <circle cx="24" cy="24" r="19" fill="url(#clockRim)" filter="url(#clockShadow)"/>
+  <!-- Face de l'horloge translucide -->
+  <circle cx="24" cy="24" r="16" fill="url(#clockFace)" opacity="0.9"/>
+  <!-- Reflet en verre -->
+  <circle cx="24" cy="24" r="16" fill="url(#clockGlass)"/>
+  <!-- Marques des heures -->
+  <line x1="24" y1="10" x2="24" y2="13" stroke="#7a3800" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="24" y1="35" x2="24" y2="38" stroke="#7a3800" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="10" y1="24" x2="13" y2="24" stroke="#7a3800" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="35" y1="24" x2="38" y2="24" stroke="#7a3800" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <!-- Aiguilles -->
+  <line x1="24" y1="24" x2="24" y2="15" stroke="#5a2800" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="31" y2="24" stroke="#5a2800" stroke-width="2" stroke-linecap="round"/>
+  <!-- Centre -->
+  <circle cx="24" cy="24" r="2" fill="#7a3800"/>
+  <!-- Picot supérieur (clocheton) -->
+  <rect x="21" y="5" width="6" height="4" rx="2" fill="url(#clockRim)"/>
+</svg>

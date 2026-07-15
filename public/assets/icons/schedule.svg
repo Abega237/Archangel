@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="rocketBody" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f0e6ff"/>
+    </linearGradient>
+    <linearGradient id="rocketShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="rocketShadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#3730a3" flood-opacity="0.5"/>
+    </filter>
+    <filter id="flameShadow">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+  <!-- Flamme/trainée (derrière) -->
+  <ellipse cx="16" cy="36" rx="5" ry="8" fill="#ff7700" opacity="0.6" filter="url(#flameShadow)" transform="rotate(-45 16 36)"/>
+  <ellipse cx="14" cy="37" rx="3" ry="5" fill="#ffcc00" opacity="0.8" filter="url(#flameShadow)" transform="rotate(-45 14 37)"/>
+  <!-- Ombre de la fusée -->
+  <path d="M38 8 L14 22 L18 28 L28 26 Z" fill="#3730a3" opacity="0.35" transform="translate(2,3)"/>
+  <!-- Corps de la fusée -->
+  <path d="M38 8 L14 22 L18 28 L28 26 Z" fill="url(#rocketBody)" filter="url(#rocketShadow)"/>
+  <!-- Aileron gauche -->
+  <path d="M18 28 L12 34 L20 30 Z" fill="#a78bfa" opacity="0.8"/>
+  <!-- Aileron droit -->
+  <path d="M28 26 L36 30 L30 22 Z" fill="#a78bfa" opacity="0.8"/>
+  <!-- Reflet brillant -->
+  <path d="M38 8 L26 15 L30 22 L35 16 Z" fill="url(#rocketShine)"/>
+  <!-- Hublot -->
+  <circle cx="26" cy="21" r="4" fill="#fff" opacity="0.5"/>
+  <circle cx="26" cy="21" r="2.5" fill="#60a5fa" opacity="0.8"/>
+  <circle cx="25" cy="20" r="1" fill="#fff" opacity="0.7"/>
+</svg>

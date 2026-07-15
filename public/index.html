@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Archangel — Messagerie</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Theme color (barre de statut Android) -->
+<meta name="theme-color" content="#0d0f17" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#f0f2f8" media="(prefers-color-scheme: light)" />
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Archangel" />
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+<link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
+<link rel="apple-touch-startup-image" href="/icons/splash-portrait.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="Archangel" />
+
+<!-- SEO & Open Graph -->
+<meta name="description" content="Archangel — Messagerie instantanée, groupes, appels vocaux et vidéo." />
+<meta property="og:title" content="Archangel" />
+<meta property="og:description" content="Messagerie instantanée sécurisée." />
+<meta property="og:image" content="/icons/icon-512x512.png" />
+
+<!-- Icône navigateur -->
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
+
+<!-- Sécurité notch / safe-area (iPhone X+) -->
+<style>
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+  body { padding-bottom: var(--safe-bottom); }
+  .message-form { padding-bottom: calc(12px + var(--safe-bottom)); }
+  .sidebar { padding-top: calc(16px + var(--safe-top)); }
+  .sidebar-toggle-btn { top: calc(12px + var(--safe-top)); }
+</style>
+
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<a href="#message-input" class="skip-link">Aller directement au champ de message</a>
+
+<!-- Écran d'authentification -->
+<section id="auth-screen" class="screen" aria-label="Authentification">
+  <div class="auth-layout">
+    <div class="auth-hero">
+      <img src="/assets/hero-archangel.png" alt="Bienvenue sur Archangel — connectez-vous, discutez et partagez en toute simplicité avec votre réseau." class="auth-hero-img" />
+    </div>
+
+    <div class="auth-card">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Connexion</button>
+        <button class="tab-btn" data-tab="register">Inscription</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <label>Nom d'utilisateur
+          <input type="text" name="username" autocomplete="username" required />
+        </label>
+        <label>Mot de passe
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="primary-btn">Se connecter</button>
+        <p class="form-error" id="login-error"></p>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <label>Nom d'utilisateur
+          <input type="text" name="username" minlength="3" required />
+        </label>
+        <label>Mot de passe
+          <input type="password" name="password" minlength="4" required />
+        </label>
+        <button type="submit" class="primary-btn">Créer mon compte</button>
+        <p class="form-error" id="register-error"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Écran de chat -->
+<section id="chat-screen" class="screen hidden">
+  <!-- Bouton hamburger mobile : ouvre/ferme la sidebar -->
+  <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <!-- Overlay pour fermer la sidebar sur mobile en cliquant à côté -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">A</div>
+      <span>Archangel</span>
+    </div>
+
+    <div class="channel active" id="channel-general" data-conversation="general">
+      <span class="channel-hash">#</span> <span data-i18n="chat.general.short">général</span>
+    </div>
+
+    <div class="online-block">
+      <div class="online-block-header">
+        <h3 data-i18n="sidebar.groups">Groupes</h3>
+        <button id="new-group-btn" class="icon-btn-small" title="Créer un groupe">+</button>
+      </div>
+      <ul id="groups-list"></ul>
+    </div>
+
+    <div class="online-block">
+      <h3 data-i18n="sidebar.dm">Messages privés</h3>
+      <ul id="contacts-list"></ul>
+    </div>
+
+    <div class="online-block">
+      <h3 data-i18n="sidebar.online">En ligne</h3>
+      <ul id="online-list"></ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="status-row">
+        <button id="profile-btn" class="profile-trigger" aria-label="Mon profil et paramètres">
+          <img id="my-avatar" class="avatar-xs" src="/assets/avatar-default.svg" alt="" aria-hidden="true" />
+          <span id="me-username"></span>
+        </button>
+        <select id="status-select" class="status-select" aria-label="Mon statut">
+          <option value="online" data-i18n="status.online">🟢 Disponible</option>
+          <option value="away" data-i18n="status.away">🟡 Absent</option>
+          <option value="busy" data-i18n="status.busy">🔴 Ne pas déranger</option>
+        </select>
+      </div>
+      <div class="sidebar-footer-actions">
+        <button id="theme-toggle-btn" class="footer-icon-btn" title="Changer le thème" aria-label="Mode sombre / clair">
+          <img id="theme-icon" src="/assets/icons/theme.svg" alt="Thème" class="icon-btn-img" />
+        </button>
+        <button id="logout-btn" class="footer-icon-btn" title="Se déconnecter" aria-label="Se déconnecter">
+          <img src="/assets/icons/logout.jpg" alt="Déconnexion" class="icon-btn-img" />
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="chat-main">
+    <div id="offline-banner" class="offline-banner hidden">⚠ Hors ligne — vos messages seront envoyés à la reconnexion</div>
+
+    <header class="chat-header">
+      <h2 id="chat-title"># général</h2>
+      <span id="group-category-badge" class="category-badge hidden"></span>
+      <span id="typing-indicator" class="typing-indicator" aria-live="polite"></span>
+      <div class="header-actions">
+        <button id="wallpaper-btn" class="icon-btn" title="Changer le fond d'écran" aria-label="Changer le fond d'écran de la conversation">
+          <img src="/assets/icons/wallpaper.jpg" alt="Fond d'écran" class="icon-btn-img" />
+        </button>
+        <button id="scheduled-btn" class="icon-btn" title="Messages programmés" aria-label="Voir les messages programmés en attente">
+          <img src="/assets/icons/scheduled-msg.jpg" alt="Programmés" class="icon-btn-img" />
+        </button>
+        <button id="manage-roles-btn" class="icon-btn hidden" title="Gérer les rôles du groupe" aria-label="Gérer les rôles et paramètres du groupe">⚙</button>
+        <button id="search-toggle-btn" class="icon-btn" title="Rechercher" aria-label="Rechercher dans les conversations">
+          <img src="/assets/icons/search.svg" alt="Recherche" class="icon-3d" />
+        </button>
+        <button id="call-btn" class="icon-btn hidden" title="Lancer un appel vidéo" aria-label="Lancer un appel vidéo">
+          <img src="/assets/icons/video-call.svg" alt="Appel vidéo" class="icon-3d" />
+        </button>
+        <button id="voice-call-btn" class="icon-btn hidden" title="Lancer un appel vocal" aria-label="Lancer un appel vocal">
+          <img src="/assets/icons/voice-call.jpg" alt="Appel vocal" class="icon-btn-img" />
+        </button>
+        <button id="block-btn" class="icon-btn hidden" title="Bloquer cet utilisateur" aria-label="Bloquer ou débloquer cet utilisateur">
+          <img src="/assets/icons/block.jpg" alt="Bloquer" class="icon-btn-img" />
+        </button>
+      </div>
+    </header>
+
+    <!-- Barre de recherche -->
+    <div id="search-bar" class="search-bar hidden">
+      <input id="search-input" type="text" placeholder="Rechercher dans vos conversations…" />
+      <button id="search-close-btn" class="icon-btn">✕</button>
+    </div>
+    <div id="search-results" class="search-results hidden"></div>
+
+    <!-- Messages épinglés (groupes) -->
+    <div id="pinned-bar" class="pinned-bar hidden"></div>
+
+    <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions">
+      <div id="load-older-indicator" class="load-older hidden">Chargement des messages précédents…</div>
+    </div>
+
+    <!-- Aperçu de la pièce jointe sélectionnée avant envoi -->
+    <div id="attachment-preview" class="attachment-preview hidden"></div>
+
+    <!-- Sélecteur d'heure pour l'envoi différé -->
+    <div id="schedule-picker" class="schedule-picker hidden">
+      <label for="schedule-input">Envoyer le message à :</label>
+      <input id="schedule-input" type="datetime-local" />
+      <button type="button" id="schedule-cancel-btn" class="icon-btn" aria-label="Annuler la programmation">✕</button>
+    </div>
+
+    <form id="message-form" class="message-form">
+      <input id="file-input" type="file" class="hidden" aria-label="Choisir un fichier à joindre" />
+      <button type="button" id="attach-btn" class="icon-btn" title="Joindre un fichier" aria-label="Joindre un fichier">
+        <img src="/assets/icons/attach.jpg" alt="Joindre" class="icon-btn-img" />
+      </button>
+      <button type="button" id="ephemeral-toggle-btn" class="icon-btn hidden" title="Message éphémère (disparaît après lecture)" aria-pressed="false" aria-label="Activer le message éphémère">
+        <img src="/assets/icons/ephemeral.jpg" alt="Éphémère" class="icon-btn-img" />
+      </button>
+      <button type="button" id="schedule-toggle-btn" class="icon-btn" title="Programmer l'envoi" aria-label="Programmer l'envoi de ce message">
+        <img src="/assets/icons/schedule.jpg" alt="Programmer" class="icon-btn-img" />
+      </button>
+      <input id="message-input" type="text" placeholder="Écrire un message…" autocomplete="off" maxlength="2000" aria-label="Message à envoyer" />
+      <button type="submit" class="send-btn" aria-label="Envoyer">➤</button>
+    </form>
+  </main>
+</section>
+
+<!-- Modale : profil et paramètres -->
+<div id="profile-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+  <div class="modal-card modal-card-large">
+    <div class="profile-modal-tabs">
+      <button class="profile-tab active" data-ptab="profile">👤 Profil</button>
+      <button class="profile-tab" data-ptab="security">🔒 Sécurité</button>
+      <button class="profile-tab" data-ptab="settings">⚙ Paramètres</button>
+    </div>
+
+    <!-- Onglet Profil -->
+    <div id="ptab-profile" class="profile-tab-panel">
+      <h3 id="profile-modal-title" data-i18n="profile.title">Mon profil</h3>
+      <div class="avatar-upload-zone">
+        <img id="profile-avatar-preview" class="avatar-lg" src="/assets/avatar-default.svg" alt="Avatar actuel" />
+        <label class="avatar-upload-label" for="avatar-file-input">
+          <span data-i18n="profile.changePhoto">Changer la photo</span>
+          <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
+        </label>
+      </div>
+      <label>
+        <span data-i18n="profile.displayName">Nom affiché</span>
+        <input id="profile-displayname" type="text" maxlength="60" placeholder="Alice Dupont" />
+      </label>
+      <label>
+        <span data-i18n="profile.username">Nom d'utilisateur</span>
+        <input id="profile-username-display" type="text" disabled />
+      </label>
+      <label>
+        <span data-i18n="profile.bio">Bio</span>
+        <textarea id="profile-bio" maxlength="300" rows="3" placeholder="Quelques mots sur vous…"></textarea>
+      </label>
+      <p class="form-error" id="profile-error"></p>
+      <div class="modal-actions">
+        <button id="profile-cancel-btn" class="secondary-btn" data-i18n="common.cancel">Annuler</button>
+        <button id="profile-save-btn" class="primary-btn" data-i18n="common.save">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Onglet Sécurité -->
+    <div id="ptab-security" class="profile-tab-panel hidden">
+      <h3 data-i18n="security.title">Sécurité</h3>
+      <fieldset class="settings-section">
+        <legend data-i18n="security.changePassword">Changer le mot de passe</legend>
+        <label>
+          <span data-i18n="security.currentPassword">Mot de passe actuel</span>
+          <input id="pwd-current" type="password" autocomplete="current-password" />
+        </label>
+        <label>
+          <span data-i18n="security.newPassword">Nouveau mot de passe</span>
+          <input id="pwd-new" type="password" autocomplete="new-password" />
+        </label>
+        <label>
+          <span data-i18n="security.confirmPassword">Confirmer le nouveau</span>
+          <input id="pwd-confirm" type="password" autocomplete="new-password" />
+        </label>
+        <p class="form-error" id="pwd-error"></p>
+        <button id="pwd-save-btn" class="primary-btn" data-i18n="security.updatePassword">Mettre à jour</button>
+      </fieldset>
+
+      <fieldset class="settings-section danger-zone">
+        <legend data-i18n="security.deleteAccount">Supprimer mon compte</legend>
+        <p class="hint-text" data-i18n="security.deleteWarning">Action irréversible. Tous vos messages seront supprimés.</p>
+        <label>
+          <span data-i18n="security.confirmWithPassword">Confirmez avec votre mot de passe</span>
+          <input id="delete-pwd" type="password" />
+        </label>
+        <p class="form-error" id="delete-error"></p>
+        <button id="delete-account-btn" class="danger-btn" data-i18n="security.deleteBtn">Supprimer mon compte</button>
+      </fieldset>
+    </div>
+
+    <!-- Onglet Paramètres -->
+    <div id="ptab-settings" class="profile-tab-panel hidden">
+      <h3 data-i18n="settings.title">Paramètres</h3>
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.language">Langue de l'application</legend>
+        <div class="lang-grid">
+          <button class="lang-btn" data-lang="fr">🇫🇷 Français</button>
+          <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+          <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+          <button class="lang-btn" data-lang="ar">🇸🇦 العربية</button>
+        </div>
+        <p id="lang-current" class="hint-text"></p>
+      </fieldset>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modale : créer un groupe -->
+<div id="group-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="group-modal-title">
+  <div class="modal-card">
+    <h3 id="group-modal-title">Nouveau groupe</h3>
+    <label>Nom du groupe
+      <input id="group-name-input" type="text" maxlength="80" placeholder="Ex. Projet X" />
+    </label>
+    <label>Catégorie / tag (optionnel)
+      <input id="group-category-create-input" type="text" maxlength="40" placeholder="Ex. Travail, Famille…" />
+    </label>
+    <label class="checkbox-inline">
+      <input id="group-encrypted-input" type="checkbox" checked />
+      Chiffrement de bout en bout (le serveur ne pourra plus lire les messages, ni les filtrer par mots-clés)
+    </label>
+    <label>Membres</label>
+    <ul id="group-members-list" class="checkbox-list"></ul>
+    <div class="modal-actions">
+      <button id="group-cancel-btn" class="secondary-btn">Annuler</button>
+      <button id="group-create-btn" class="primary-btn">Créer</button>
+    </div>
+    <p class="form-error" id="group-error"></p>
+  </div>
+</div>
+
+<!-- Modale : gérer les rôles du groupe -->
+<div id="roles-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="roles-modal-title">
+  <div class="modal-card">
+    <h3 id="roles-modal-title">Rôles du groupe</h3>
+    <label>Catégorie / tag du groupe
+      <input id="group-category-input" type="text" maxlength="40" placeholder="Ex. Travail, Famille…" />
+    </label>
+    <label id="group-keywords-label">Mots-clés filtrés (séparés par des virgules)
+      <input id="group-keywords-input" type="text" placeholder="Ex. spam, lien-suspect" />
+    </label>
+    <p id="group-keywords-disabled-note" class="hint-text hidden">Ce groupe est chiffré de bout en bout : le serveur ne peut pas lire les messages, le filtrage par mots-clés est donc inopérant ici.</p>
+    <ul id="roles-members-list" class="checkbox-list"></ul>
+    <div class="modal-actions">
+      <button id="roles-cancel-btn" class="secondary-btn">Fermer</button>
+      <button id="roles-save-category-btn" class="primary-btn">Enregistrer</button>
+    </div>
+    <p class="form-error" id="roles-error"></p>
+  </div>
+</div>
+
+<!-- Modale : fond d'écran de la conversation -->
+<div id="wallpaper-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="wallpaper-modal-title">
+  <div class="modal-card">
+    <h3 id="wallpaper-modal-title">Fond d'écran de la conversation</h3>
+    <div id="wallpaper-presets" class="wallpaper-presets"></div>
+    <label>Image personnalisée
+      <input id="wallpaper-file-input" type="file" accept="image/*" />
+    </label>
+    <div class="modal-actions">
+      <button id="wallpaper-reset-btn" class="secondary-btn">Réinitialiser</button>
+      <button id="wallpaper-close-btn" class="primary-btn">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale : messages programmés en attente -->
+<div id="scheduled-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="scheduled-modal-title">
+  <div class="modal-card">
+    <h3 id="scheduled-modal-title">Messages programmés</h3>
+    <ul id="scheduled-list" class="checkbox-list"></ul>
+    <p id="scheduled-empty" class="hint-text hidden">Aucun message programmé en attente.</p>
+    <div class="modal-actions">
+      <button id="scheduled-close-btn" class="secondary-btn">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay d'appel vidéo -->
+<div id="call-overlay" class="call-overlay hidden">
+  <div class="call-mode-toggle" id="call-mode-toggle">
+    <button class="call-mode-btn active" data-mode="video" aria-pressed="true">📹 Vidéo</button>
+    <button class="call-mode-btn" data-mode="audio" aria-pressed="false">📞 Vocal seul</button>
+  </div>
+  <div class="call-videos" id="call-videos">
+    <video id="remote-video" autoplay playsinline aria-label="Vidéo du correspondant"></video>
+    <video id="local-video" autoplay playsinline muted aria-label="Votre vidéo"></video>
+  </div>
+  <div id="voice-call-indicator" class="hidden" style="text-align:center;">
+    <div style="font-size:56px;margin-bottom:12px;">📞</div>
+    <p id="voice-call-name" style="font-size:18px;font-family:var(--font-display);"></p>
+  </div>
+  <p id="call-status" class="call-status" aria-live="polite"></p>
+  <div class="call-actions">
+    <button id="call-accept-btn" class="primary-btn hidden">Décrocher</button>
+    <button id="call-hangup-btn" class="danger-btn">Raccrocher</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

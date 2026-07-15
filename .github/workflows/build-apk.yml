@@ -1,0 +1,48 @@
+name: Build Archangel APK
+
+# Se déclenche à chaque push sur main, et peut aussi être lancé manuellement
+# depuis l'onglet "Actions" du dépôt GitHub (bouton "Run workflow").
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installation de Java 17 (requis par Gradle/Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Installation des dépendances npm
+        run: npm ci
+
+      - name: Installation des dépendances Capacitor
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/splash-screen
+
+      - name: Synchronisation Capacitor (copie des assets web -> Android)
+        run: npx cap sync android
+
+      - name: Autoriser l'exécution de gradlew
+        run: chmod +x android/gradlew
+
+      - name: Build de l'APK (debug)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Publication de l'APK comme artefact téléchargeable
+        uses: actions/upload-artifact@v4
+        with:
+          name: archangel-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk

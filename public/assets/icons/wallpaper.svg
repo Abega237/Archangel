@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="frameBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c8a86a"/>
+      <stop offset="50%" stop-color="#8b6030"/>
+      <stop offset="100%" stop-color="#5a3a10"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#87ceeb"/>
+      <stop offset="100%" stop-color="#e0f4ff"/>
+    </linearGradient>
+    <filter id="frameShadow">
+      <feDropShadow dx="1" dy="3" stdDeviation="3" flood-color="#3a2000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Ombre extrusion du cadre -->
+  <rect x="7" y="11" width="36" height="28" rx="4" fill="#3a2000" opacity="0.3"/>
+  <!-- Cadre principal -->
+  <rect x="5" y="8" width="36" height="28" rx="4" fill="url(#frameBody)" filter="url(#frameShadow)"/>
+  <!-- Zone image -->
+  <rect x="9" y="12" width="28" height="20" rx="2" fill="url(#sky)"/>
+  <!-- Soleil (arrière-plan) -->
+  <circle cx="30" cy="18" r="5" fill="#ffd700" opacity="0.9"/>
+  <circle cx="30" cy="18" r="3.5" fill="#ffec6a"/>
+  <!-- Montagne arrière-plan -->
+  <polygon points="8,32 18,16 26,32" fill="#90b870" opacity="0.7"/>
+  <!-- Montagne premier plan -->
+  <polygon points="14,32 26,19 38,32" fill="#5a8040"/>
+  <!-- Reflet sur le cadre (bord haut) -->
+  <rect x="6" y="9" width="34" height="5" rx="3" fill="#ffffff" opacity="0.25"/>
+  <!-- Vis de coin (effet 3D) -->
+  <circle cx="10" cy="13" r="1.5" fill="#c8a86a" stroke="#7a5020" stroke-width="0.5"/>
+  <circle cx="36" cy="13" r="1.5" fill="#c8a86a" stroke="#7a5020" stroke-width="0.5"/>
+  <circle cx="10" cy="33" r="1.5" fill="#c8a86a" stroke="#7a5020" stroke-width="0.5"/>
+  <circle cx="36" cy="33" r="1.5" fill="#c8a86a" stroke="#7a5020" stroke-width="0.5"/>
+</svg>

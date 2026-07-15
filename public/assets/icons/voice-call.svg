@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <radialGradient id="phoneBg" cx="30%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="40%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </radialGradient>
+    <radialGradient id="phoneShine" cx="30%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="phoneShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#022c22" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <!-- Fond circulaire 3D -->
+  <circle cx="25" cy="26" r="20" fill="#022c22" opacity="0.4"/>
+  <circle cx="24" cy="24" r="20" fill="url(#phoneBg)" filter="url(#phoneShadow)"/>
+  <circle cx="24" cy="24" r="20" fill="url(#phoneShine)"/>
+  <!-- Combiné téléphonique incurvé -->
+  <path d="M14 30 C12 26 12 20 16 16 L19 19 C17 22 17 24 18 26 Z" fill="white" opacity="0.9"/>
+  <path d="M34 18 C38 22 38 28 34 32 L31 29 C33 26 33 24 32 22 Z" fill="white" opacity="0.9"/>
+  <path d="M16 16 C19 12 29 11 34 14 L31 17 C27 15 21 15 19 17 Z" fill="white" opacity="0.9"/>
+  <path d="M16 32 C12 36 11 38 14 40 L18 37 C16 35 17 34 19 32 Z" fill="white" opacity="0.85"/>
+  <!-- Reflet sur le combiné -->
+  <path d="M16 16 C19 12 29 11 34 14 L31 16 C27 14 22 14 19 16 Z" fill="rgba(255,255,255,0.4)"/>
+</svg>

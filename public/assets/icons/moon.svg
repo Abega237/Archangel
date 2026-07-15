@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <radialGradient id="moonGrad" cx="60%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#e0e7ff"/>
+      <stop offset="50%" stop-color="#a5b4fc"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </radialGradient>
+    <filter id="moonGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#818cf8" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <!-- Lune -->
+  <path d="M28 8 A16 16 0 1 0 28 40 A10 10 0 1 1 28 8 Z" fill="url(#moonGrad)" filter="url(#moonGlow)"/>
+  <!-- Cratères -->
+  <circle cx="18" cy="20" r="2" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="22" cy="30" r="1.5" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="14" cy="28" r="1" fill="rgba(255,255,255,0.2)"/>
+  <!-- Étoiles -->
+  <circle cx="36" cy="12" r="1.5" fill="#fde68a"/>
+  <circle cx="40" cy="22" r="1" fill="#fde68a"/>
+  <circle cx="38" cy="32" r="1.2" fill="#fde68a"/>
+</svg>
